@@ -25,6 +25,7 @@ pipeline {
             }
         }
         stage('Deliver') { 
+	     steps {
             	agent {
 		    dockerfile {
 			filename 'Dockerfile'
@@ -32,6 +33,7 @@ pipeline {
 			additionalBuildArgs  '--build-arg version=0.0.2'
 		    }
 		}
+	     }
         }
         
             
