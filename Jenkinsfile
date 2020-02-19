@@ -26,13 +26,13 @@ pipeline {
         }
         stage('Deliver') { 
 	     steps {
-            	agent {
+            	
 		    dockerfile {
 			filename 'Dockerfile'
 			label 'sushantac/user-service'
 			additionalBuildArgs  '--build-arg version=0.0.2'
 		    }
-		}
+	
 	     }
         }
         
