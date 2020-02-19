@@ -4,10 +4,7 @@ pipeline{
     
     stage('MVN Package - user-service'){
 		steps{
-			def mvnHome = tool name: 'Apache Maven', type: 'maven'
-			def mvnCMD = "${mvnHome}/bin/mvn"
-
-			sh "\"${mvnCMD}\" clean package"
+			sh "mvn clean package"
 		}
     }
         
