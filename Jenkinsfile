@@ -26,8 +26,21 @@ pipeline {
         }
         stage('Deliver') { 
             steps {
-                sh 'docker build -t sushantac/user-service:0.0.1 --file user-service/Dockerfile .'
+                sh 'docker build -t sushantac/user-service:0.0.1 --file Dockerfile .'
             }
         }
+        
+         stage('Deploy') { 
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'password', usernameVariable: 'username')]) {
+				  sh "docker login -u sushantac -p ${dockerHubPassword}"
+		        }
+            }
+            
+            steps {
+                sh 'docker push sushantac/user-service:0.0.1' 
+            }
+         }
+        
     }
 }
