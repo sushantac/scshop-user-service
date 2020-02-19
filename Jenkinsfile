@@ -1,28 +1,33 @@
-pipeline{
-  agent any
-  stages {
-    
-    stage('MVN Package - user-service'){
-		steps{
-			sh "mvn clean package"
-		}
+pipeline {
+    agent {
+        docker {
+            image 'maven:3-alpine'
+            args '-v /root/.m2:/root/.m2'
+        }
     }
-        
-    stage('Build Docker Image - user-service') {
-		steps{
-			sh 'docker build -t sushantac/user-service:0.0.1 --file user-service/Dockerfile .'
-		}
+    options {
+        skipStagesAfterUnstable()
     }
-    
-    stage('Push to docker hub - user-service') {
-		steps{
-		  withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'password', usernameVariable: 'username')]) {
-				sh "docker login -u sushantac -p ${dockerHubPassword}"
-		  }
-
-		  sh 'docker push sushantac/user-service:0.0.1'
-		}
+    stages {
+        stage('Build') {
+            steps {
+                sh 'mvn -B -DskipTests clean package'
+            }
+        }
+        stage('Test') {
+            steps {
+                sh 'mvn test'
+            }
+            post {
+                always {
+                    junit 'target/surefire-reports/*.xml'
+                }
+            }
+        }
+        stage('Deliver') { 
+            steps {
+                sh 'docker build -t sushantac/user-service:0.0.1 --file user-service/Dockerfile .'
+            }
+        }
     }
-    
-  }
 }
