@@ -36,6 +36,16 @@ pipeline {
 	     }
         }
         
+	stage('Deploy') { 
+	     steps {
+            	
+		  withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'password', usernameVariable: 'username')]) {
+				sh "docker login -u sushantac -p ${dockerHubPassword}"
+		  }
+
+		  sh 'docker push sushantac/user-service:0.0.1'
+	     }
+        }
             
     }
 }
