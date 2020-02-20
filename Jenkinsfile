@@ -26,7 +26,7 @@ pipeline {
 	    
 	    stage('DELPOY') {
      	        steps {
-			withCredentials([string(credentialsId: 'dockerHubCredentials', variable: 'dockerHubPassword')]) {
+			withCredentials([string(credentialsId: 'dockerHubPassword1', variable: 'dockerHubPassword')]) {
 			    sh "docker login -u sushantac -p ${dockerHubPassword}"
 			    sh 'docker push sushantac/user-service:0.0.1'
 			}
