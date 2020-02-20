@@ -1,4 +1,9 @@
 pipeline {
+
+	environment {
+		dockerImage = ''
+	}
+	
     agent {
         docker {
             image 'maven:3-alpine'
@@ -27,11 +32,15 @@ pipeline {
         stage('Deliver') { 
 	     steps {
             	
-		    dockerfile {
-			filename 'Dockerfile'
-			label 'sushantac/user-service'
-			additionalBuildArgs  '--build-arg version=0.0.2'
-		    }
+		    //dockerfile {
+			//filename 'Dockerfile'
+			//label 'sushantac/user-service'
+			//additionalBuildArgs  '--build-arg version=0.0.2'
+		    //}
+			
+			script {
+			  dockerImage = docker.build 'sushantac/user-service' + ":$BUILD_NUMBER"
+			}
 	
 	     }
         }
@@ -39,11 +48,15 @@ pipeline {
 	stage('Deploy') { 
 	     steps {
             	
-		 withDockerRegistry([ credentialsId: "dockerHubCredentials", url: "https://registry-1.docker.io/v2/" ]) {
+		 //withDockerRegistry([ credentialsId: "dockerHubCredentials", url: "https://registry-1.docker.io/v2/" ]) {
 			  // following commands will be executed within logged docker registry
-			  sh 'docker push sushantac/user-service:0.0.1'
-		 }
-
+			  //sh 'docker push sushantac/user-service:0.0.1'
+		 //}
+			script {
+			  docker.withRegistry( '', "dockerHubCredentials" ) {
+				dockerImage.push()
+			  }
+			}
 		  
 	     }
         }
