@@ -2,7 +2,7 @@ pipeline {
 
 	  environment {
 	    registry = "sushantac/user-service"
-	    registryCredential = ‘dockerHubCredentials’
+	    registryCredential = "dockerHubCredentials"
 	  }
 	
     agent {
