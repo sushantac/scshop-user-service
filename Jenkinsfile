@@ -36,18 +36,18 @@ pipeline {
 	     }
         }
         
-	stage('Deploy') { 
-	     steps {
+	//stage('Deploy') { 
+	     //steps {
             	
 		 //withDockerRegistry([ credentialsId: "dockerHubCredentials", url: "https://registry-1.docker.io/v2/" ]) {
 			  // following commands will be executed within logged docker registry
 			  //sh 'docker push sushantac/user-service:0.0.1'
 		 //}
 			
-		sh 'docker run -d -p 8002:8002 --name user-service sushantac/user-service:0.0.1'
-		  
-	     }
-        }
+		//sh 'docker run -d -p 8002:8002 --name user-service sushantac/user-service:0.0.1'
+		 
+	    // }
+        //}
             
     }
 }
