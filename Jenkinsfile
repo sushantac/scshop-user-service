@@ -1,9 +1,6 @@
 pipeline {
 
-	  environment {
-	    registry = "sushantac/user-service"
-	    registryCredential = "dockerHubCredentials"
-	  }
+	 
 	
     agent {
         docker {
@@ -17,41 +14,24 @@ pipeline {
     stages {
        
             stage('Deliver') { 
-	     steps {
+	       steps {
             	
 		    dockerfile {
 			filename 'Dockerfile'
 			label 'sushantac/user-service'
 			additionalBuildArgs  '--build-arg version=0.0.2'
 		    }
-	
-	    	 }
-		}
-
-		stage('Deploy') { 
-		     steps {
-
-			 withDockerRegistry([ credentialsId: "dockerHubCredentials", url: "https://registry-1.docker.io/v2/" ]) {
-				  // following commands will be executed within logged docker registry
-				  sh 'docker push sushantac/user-service:0.0.1'
-			 }
-
-
-		     }
-		}
-	    
-	    
-	    stage {
-		    steps {
-	     	withCredentials([string(credentialsId: 'dockerHubCredentials', variable: 'dockerHubPassword')]) {
-		    sh "docker login -u sushantac -p ${dockerHubPassword}"
-		    sh 'docker push sushantac/user-service:0.0.1'
-		}
-
-		    }
+	    	}
 	    }
 	    
-	    
+	    stage('DELPOY') {
+     	        steps {
+			withCredentials([string(credentialsId: 'dockerHubCredentials', variable: 'dockerHubPassword')]) {
+			    sh "docker login -u sushantac -p ${dockerHubPassword}"
+			    sh 'docker push sushantac/user-service:0.0.1'
+			}
+  	        }
+	    }
             
     }
 }
