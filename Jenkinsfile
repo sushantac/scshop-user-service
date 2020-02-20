@@ -1,9 +1,6 @@
 //This is a script for local windows machine. Need to create a better declarative pipeline script for linux on aws
 
 node{
-    stage('SCM Checkout from GitHub'){
-        git 'https://github.com/sushantac/sc-shop'
-    }
     
     stage('MVN Package - user-service'){
         def mvnHome = tool name: 'Apache Maven', type: 'maven'
