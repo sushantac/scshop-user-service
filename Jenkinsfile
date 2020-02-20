@@ -1,41 +1,64 @@
-//This is a script for local windows machine. Need to create a better declarative pipeline script for linux on aws
-
-node{
-    
-    stage('MVN Package - user-service'){
-        def mvnHome = tool name: 'Apache Maven', type: 'maven'
-        def mvnCMD = "${mvnHome}/bin/mvn"
-        
-        sh label: '', script: "\"${mvnCMD}\" clean package"
+pipeline {
+    agent {
+        docker {
+            image 'maven:3-alpine'
+            args '-v /root/.m2:/root/.m2'
+        }
     }
-    
-    stage('Build Docker Image - user-service') {
-        sh label: '', script: 'docker build -t sushantac/user-service:0.0.1 --file Dockerfile .'
+    options {
+        skipStagesAfterUnstable()
     }
-    
-    stage('Push to docker hub - user-service') {
+    stages {
+        stage('Build') {
+            steps {
+                sh 'mvn -B -DskipTests clean package'
+            }
+        }
+        stage('Test') {
+            steps {
+                sh 'mvn test'
+            }
+            post {
+                always {
+                    junit 'target/surefire-reports/*.xml'
+                }
+            }
+        }
+        stage('Deliver') { 
+	     steps {
+            	
+		    dockerfile {
+			filename 'Dockerfile'
+			label 'sushantac/user-service'
+			additionalBuildArgs  '--build-arg version=0.0.2'
+		    }
 	
-	    withCredentials([string(credentialsId: 'dockerHubPassword1', variable: 'dockerHubPassword')]) {
-            sh label: '', script: "docker login -u sushantac -p ${dockerHubPassword}"
-        }
-
-        sh label: '', script: 'docker push sushantac/user-service:0.0.1'
-    }
-
-    stage('Run container on Dev server'){
-        try{
-            sh label: '', script: 'docker stop user-service'
-        } catch(all) {
-
+	     }
         }
         
-        try{
-            sh label: '', script: 'docker rm user-service'
-        } catch(all) {
+	stage('Deploy') { 
+	     steps {
+            	
+		 //withDockerRegistry([ credentialsId: "dockerHubCredentials", url: "https://registry-1.docker.io/v2/" ]) {
+			  // following commands will be executed within logged docker registry
+			  //sh 'docker push sushantac/user-service:0.0.1'
+		 //}
+			try{
+				sh 'docker stop user-service'
+			} catch(all) {
 
+			}
+			
+			try{
+				sh 'docker rm user-service'
+			} catch(all) {
+
+			}
+
+			sh 'docker run -d -p 8002:8002 --name user-service sushantac/user-service:0.0.1'
+		  
+	     }
         }
-
-        sh label: '', script: 'docker run -d -p 8002:8002 --name user-service sushantac/user-service:0.0.1'
+            
     }
-    
 }
