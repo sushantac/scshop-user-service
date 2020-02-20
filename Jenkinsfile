@@ -42,12 +42,13 @@ pipeline {
 	    
 	    
 	    stage {
+		    steps {
 	     	withCredentials([string(credentialsId: 'dockerHubCredentials', variable: 'dockerHubPassword')]) {
 		    sh "docker login -u sushantac -p ${dockerHubPassword}"
 		    sh 'docker push sushantac/user-service:0.0.1'
 		}
 
-		
+		    }
 	    }
 	    
 	    
