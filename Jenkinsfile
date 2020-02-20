@@ -43,19 +43,8 @@ pipeline {
 			  // following commands will be executed within logged docker registry
 			  //sh 'docker push sushantac/user-service:0.0.1'
 		 //}
-			try{
-				sh 'docker stop user-service'
-			} catch(all) {
-
-			}
 			
-			try{
-				sh 'docker rm user-service'
-			} catch(all) {
-
-			}
-
-			sh 'docker run -d -p 8002:8002 --name user-service sushantac/user-service:0.0.1'
+		sh 'docker run -d -p 8002:8002 --name user-service sushantac/user-service:0.0.1'
 		  
 	     }
         }
