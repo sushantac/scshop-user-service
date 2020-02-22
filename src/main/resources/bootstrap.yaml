@@ -11,7 +11,7 @@ spring:
       enabled: true
   cloud:
     config:
-      uri: $(CONFIG_SERVER:http://localhost:8011}
+      uri: ${CONFIG_SERVER:http://localhost:8011}
 
 management:
   endpoints:
@@ -24,6 +24,6 @@ eureka:
     registerWithEureka: true
     fetchRegistry: true
     serviceUrl:
-      defaultZone: $(EUREKA_SERVER:http://localhost:8012/eureka/}
+      defaultZone: ${EUREKA_SERVER:http://localhost:8012/eureka/}
     healthcheck:
       enabled: true
